@@ -1,0 +1,6 @@
+@TP_SOMEI_HostAddress = http://localhost:5163
+
+GET {{TP_SOMEI_HostAddress}}/api/products/
+Accept: application/json
+
+###
