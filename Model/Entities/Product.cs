@@ -1,13 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TP_SOMEI.Entities;
+namespace TP_SOMEI.Model.Entities;
 
 public class Product
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ProductId { get; set; }
+    
+    // Un produit apparient à un seul utilsateur : Clé étrangère
+    [StringLength(450, ErrorMessage = "L'id de l'utilisateur est trop long")]
+    public string? UserId { get; set; }
     
     [Required(ErrorMessage = "Veuillez spécifier le nom du produit")]
     [StringLength(30,ErrorMessage = "Le nom du produit est trop long")]
@@ -17,6 +21,6 @@ public class Product
     [StringLength(100,ErrorMessage = "La description du produit est trop longue")]
     public string? ProductDescription { get; set; }
     [Url]
-    [StringLength(200,ErrorMessage = "L'Url de l'image du produit est trop longue")]
+    [StringLength(300,ErrorMessage = "L'Url de l'image du produit est trop longue")]
     public string? ProductImageUrl { get; set; }
 }

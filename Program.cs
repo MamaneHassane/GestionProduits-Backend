@@ -1,4 +1,5 @@
 using TP_SOMEI.Datas;
+using TP_SOMEI.Model.Entities;
 using TP_SOMEI.Repositories.Implementations;
 using TP_SOMEI.Repositories.Interfaces;
 
@@ -11,6 +12,9 @@ builder.Services.AddSwaggerGen();
 
 // Mettre IServiceCollection dans une variable
 var dependencyContainer = builder.Services;
+
+// Ajouter les endpoints de .NET Identity
+dependencyContainer.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Mettre les configurations du builder dans une variable
 var configurations = builder.Configuration;
@@ -37,8 +41,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseStaticFiles(); 
+app.UseRouting();
+
+// Politique des origines
+app.UseCors(options =>
+{
+    options.WithOrigins("http://localhost:4200")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
+
+
 // Mapper les contrôleurs
 app.MapControllers();
+
+// Mapper les endpoints de .NET Identity
+app.MapIdentityApi<User>();
 
 app.UseHttpsRedirection();
 

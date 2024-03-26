@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TP_SOMEI.Datas;
-using TP_SOMEI.Entities;
 using TP_SOMEI.Model.DTOs;
+using TP_SOMEI.Model.Entities;
 using TP_SOMEI.Repositories.Interfaces;
 
 namespace TP_SOMEI.Repositories.Implementations;
@@ -10,14 +10,40 @@ public class ProductRepository(ApplicationDbContext context) : IProductRepositor
 {
     private readonly ApplicationDbContext _context = context;
     
-    public async Task<IEnumerable<Product?>?> GetAllProducts()
+    public async Task<IEnumerable<Product?>?> GetAllProductsByUser(string userId)
     {
-        return await _context.Products.ToListAsync();
+        return await _context.Products.Where(product=>product.UserId == userId).ToListAsync();
     }
 
-    public async Task<Product?> FindProductById(int productId)
+    public async Task<IEnumerable<Product>> GetProductsByUserAndPageNumber(string userId, int pageNumber)
     {
-        return await _context.Products.Where(product => product.ProductId == productId).FirstOrDefaultAsync();
+        if (pageNumber < 1) pageNumber = 1;
+        const int defaultPageSize = 20;
+        var numberToSkip = (pageNumber - 1) * defaultPageSize;
+        return await _context.Products.Where(product=>product.UserId == userId)
+            .Skip(numberToSkip)
+            .Take(defaultPageSize)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetProductsByUserAndPageNumberAndPageSize(string userId, int pageNumber, int pageSize)
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 20;
+        if (pageSize > 50) pageSize = 50;
+        var numberToSkip = (pageNumber - 1) * pageSize;
+        return await _context.Products.Where(product=>product.UserId == userId)
+            .Skip(numberToSkip)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+    
+
+    public async Task<Product?> FindProductByUserAndId(string userId, int productId)
+    {
+        return await _context.Products.Where(product=>product.UserId == userId)
+            .Where(product => product.ProductId == productId)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<Product?> AddProduct(ProductDto productDto)
@@ -44,6 +70,7 @@ public class ProductRepository(ApplicationDbContext context) : IProductRepositor
         try
         {
             await _context.Products.Where(product => product.ProductId == productId).ExecuteDeleteAsync();
+            await _context.SaveChangesAsync();
             return true;
         }
         catch (Exception exception)
