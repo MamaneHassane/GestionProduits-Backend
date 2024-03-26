@@ -10,39 +10,35 @@ public class ProductRepository(ApplicationDbContext context) : IProductRepositor
 {
     private readonly ApplicationDbContext _context = context;
     
-    public async Task<IEnumerable<Product?>?> GetAllProductsByUser(string userId)
+    public async Task<IEnumerable<Product?>?> GetAllProducts()
     {
-        return await _context.Products.Where(product=>product.UserId == userId).ToListAsync();
+        return await _context.Products.ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetProductsByUserAndPageNumber(string userId, int pageNumber)
+    public async Task<IEnumerable<Product>> GetProductsByPageNumber(int pageNumber)
     {
         if (pageNumber < 1) pageNumber = 1;
         const int defaultPageSize = 20;
         var numberToSkip = (pageNumber - 1) * defaultPageSize;
-        return await _context.Products.Where(product=>product.UserId == userId)
-            .Skip(numberToSkip)
+        return await _context.Products.Skip(numberToSkip)
             .Take(defaultPageSize)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetProductsByUserAndPageNumberAndPageSize(string userId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<Product>> GetProductsByPageNumberAndPageSize(int pageNumber, int pageSize)
     {
         if (pageNumber < 1) pageNumber = 1;
         if (pageSize < 1) pageSize = 20;
         if (pageSize > 50) pageSize = 50;
         var numberToSkip = (pageNumber - 1) * pageSize;
-        return await _context.Products.Where(product=>product.UserId == userId)
-            .Skip(numberToSkip)
+        return await _context.Products.Skip(numberToSkip)
             .Take(pageSize)
             .ToListAsync();
     }
-    
 
-    public async Task<Product?> FindProductByUserAndId(string userId, int productId)
+    public async Task<Product?> FindProductById(int productId)
     {
-        return await _context.Products.Where(product=>product.UserId == userId)
-            .Where(product => product.ProductId == productId)
+        return await _context.Products.Where(product => product.ProductId == productId)
             .FirstOrDefaultAsync();
     }
 

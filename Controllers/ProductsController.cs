@@ -11,12 +11,12 @@ public class ProductsController(IProductRepository productRepository) : Controll
 {
     private readonly IProductRepository _productRepository = productRepository;
     
-    [HttpGet("{userId}")]
-    public async Task<ActionResult<IEnumerable<Product?>>?> GetAllProductsByUser(string userId)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Product?>>?> GetAllProductsByUser()
     {
         try
         {
-            return Ok( await _productRepository.GetAllProductsByUser(userId));
+            return Ok( await _productRepository.GetAllProducts());
         }
         catch (Exception exception)
         {
@@ -26,12 +26,12 @@ public class ProductsController(IProductRepository productRepository) : Controll
         }
     }
     
-    [HttpGet("user/{userId}/page/{pageNumber:int}")]
-    public async Task<ActionResult<IEnumerable<Product>?>?> GetProductsByUserAndPageNumber(string userId, int pageNumber)
+    [HttpGet("page/{pageNumber:int}")]
+    public async Task<ActionResult<IEnumerable<Product>?>?> GetProductsByUserAndPageNumber(int pageNumber)
     {
         try
         {
-            return Ok(await _productRepository.GetProductsByUserAndPageNumber(userId,pageNumber));
+            return Ok(await _productRepository.GetProductsByPageNumber(pageNumber));
         }
         catch (Exception exception)
         {
@@ -41,12 +41,12 @@ public class ProductsController(IProductRepository productRepository) : Controll
         }
     }
     
-    [HttpGet("user/{userId}/pageNumber/{pageNumber:int}/pageSize/{pageSize:int}")]
-    public async Task<ActionResult<IEnumerable<Product>?>?> GetProductsByPageNumberAndPageSize(string userId, int pageNumber, int pageSize)
+    [HttpGet("pageNumber/{pageNumber:int}/pageSize/{pageSize:int}")]
+    public async Task<ActionResult<IEnumerable<Product>?>?> GetProductsByPageNumberAndPageSize(int pageNumber, int pageSize)
     {
         try
         {
-            return Ok(await _productRepository.GetProductsByUserAndPageNumberAndPageSize(userId,pageNumber,pageSize));
+            return Ok(await _productRepository.GetProductsByPageNumberAndPageSize(pageNumber,pageSize));
         }
         catch (Exception exception)
         {
@@ -56,12 +56,12 @@ public class ProductsController(IProductRepository productRepository) : Controll
         }
     }
 
-    [HttpGet("user/{userId}/product/{productId:int}")]
-    public async Task<ActionResult<Product?>?> GetProductById(string userId, int productId)
+    [HttpGet("{productId:int}")]
+    public async Task<ActionResult<Product?>?> GetProductById(int productId)
     {
         try
         {
-            var theProduct = await _productRepository.FindProductByUserAndId(userId,productId);
+            var theProduct = await _productRepository.FindProductById(productId);
             if (theProduct is not null) return Ok(theProduct);
             return NotFound($"Le produit avec l'identifiant "+ productId + " n'existe pas dans la base de données");
         }
