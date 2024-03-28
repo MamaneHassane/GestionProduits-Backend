@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TP_SOMEI.Model.DTOs;
 using TP_SOMEI.Model.Entities;
 using TP_SOMEI.Repositories.Interfaces;
@@ -7,9 +8,16 @@ namespace TP_SOMEI.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
+[Authorize]
 public class ProductsController(IProductRepository productRepository) : ControllerBase
 {
     private readonly IProductRepository _productRepository = productRepository;
+
+    [HttpGet("numberOfPages/{pageSize:int}")]
+    public ActionResult<int> GetNumberOfPagesByPageSize(int pageSize)
+    {
+        return Ok(_productRepository.GetNumberOfPagesByPageSize(pageSize));
+    }
     
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product?>>?> GetAllProductsByUser()

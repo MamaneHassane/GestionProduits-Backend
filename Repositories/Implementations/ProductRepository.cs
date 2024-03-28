@@ -9,7 +9,16 @@ namespace TP_SOMEI.Repositories.Implementations;
 public class ProductRepository(ApplicationDbContext context) : IProductRepository
 {
     private readonly ApplicationDbContext _context = context;
-    
+
+    public int GetNumberOfPagesByPageSize(int pageSize)
+    {
+        int numberOfPages;
+        var totalItemsNumber = _context.Products.ToList().Count;
+        if(totalItemsNumber%pageSize>0) numberOfPages = (totalItemsNumber/pageSize) + 1;
+            else numberOfPages = (totalItemsNumber/pageSize);
+        return numberOfPages >= 1 ? numberOfPages : 1;
+    }
+
     public async Task<IEnumerable<Product?>?> GetAllProducts()
     {
         return await _context.Products.ToListAsync();

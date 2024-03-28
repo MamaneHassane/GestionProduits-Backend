@@ -45,6 +45,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles(); 
 app.UseRouting();
 
+
 // Politique des origines
 app.UseCors(options =>
 {
@@ -53,12 +54,16 @@ app.UseCors(options =>
         .AllowAnyHeader();
 });
 
+// Autorisation
+app.UseAuthorization();
 
 // Mapper les contrôleurs
 app.MapControllers();
 
 // Mapper les endpoints de .NET Identity
 app.MapIdentityApi<User>();
+
+
 
 app.UseHttpsRedirection();
 

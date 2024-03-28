@@ -5,6 +5,8 @@ namespace TP_SOMEI.Repositories.Interfaces;
 
 public interface IProductRepository
 {
+    // Avoir le nombre de pages
+    int GetNumberOfPagesByPageSize(int pageSize);
     // Lister tous les produits
     Task<IEnumerable<Product?>?> GetAllProducts();
     // Lister par page, nombre d'éléments par page par défaut = 20
